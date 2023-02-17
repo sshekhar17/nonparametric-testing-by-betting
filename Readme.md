@@ -12,4 +12,4 @@ The three experiments reported in Section 6 of the manuscript can be repeated by
 * `python3 Experiment2.py --save_fig --save_data`
 * `python3 Experiment3.py --save_fig --save_data`
 
-The two flags (`--save_fig` and `--save_data`) are used for saving the figures (in .tex format) and the experiment data (in .pkl format). 
+The two flags (`--save_fig` and `--save_data`) are used for saving the figures (in .png format) and the experiment data (in .pkl format). 
