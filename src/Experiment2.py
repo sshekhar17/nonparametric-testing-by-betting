@@ -141,6 +141,8 @@ if __name__=='__main__':
         os.path.dirname(os.path.abspath(__file__))
     )
     data_dir = parent_dir + '/data'
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
     figname = f'{data_dir}/Adaptivity1.png'
     plot_results(DataToPlot, title, xlabel, ylabel, savefig=savefig, figname=figname)
 
