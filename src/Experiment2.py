@@ -2,7 +2,7 @@
 Experiment 2 from Section VI: "Numerical Experiments"
 Adaptivity of the sequential test to the problem hardness 
 """
-
+import os
 import argparse
 import pickle
 from functools import partial
@@ -86,15 +86,29 @@ def plot_results(Data, title, xlabel, ylabel, savefig=False, figname=None):
         plt.show()
 
 if __name__=='__main__':
+    import argparse 
+    parser = argparse.ArgumentParser() 
+    parser.add_argument('--d', default=10, type=int, help='data dimension')
+    parser.add_argument('--num_perms', '-np', default=200, type=int)
+    parser.add_argument('--num_trials', '-nt', default=500, type=int)
+    parser.add_argument('--save_fig', '-sf', action='store_true')
+    parser.add_argument('--save_data', '-sd', action='store_true')
+    parser.add_argument('--alpha', '-a', default=0.05, type=float)
+
+    args = parser.parse_args()
+
+
+
+
  # Maximum sample size 
     Epsilon_mean = np.flip(np.array([0.3, 0.35, 0.4, 0.45, 0.5, 0.7]))
     NN_batch = np.flip(np.array([1200, 1000, 600, 500, 450, 250]))
     NN_betting = 3*NN_batch 
 
-    d=10
-    num_perms = 200
-    num_trials= 500
-    alpha=0.05
+    d= args.d 
+    num_perms = args.num_perms 
+    num_trials= args.num_trials
+    alpha= args.alpha
     num_steps_batch= 20
     ### parameters of the Gaussian distribution 
     epsilon_var = 1.5 
@@ -102,8 +116,8 @@ if __name__=='__main__':
     num_pert_var = 0
 
     ######################
-    savefig=True
-    savedata=savefig
+    savefig=args.save_fig
+    savedata=args.save_data
     ######################
 
     DataToPlot = {}
@@ -122,9 +136,14 @@ if __name__=='__main__':
     title='Adaptivity of Sequential Test to Alternative'
     xlabel='Sample-Size (n)'
     ylabel='Power'
-    figname = './data/Adaptivity1.png'
+    # get the path of the file to store data 
+    parent_dir = os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))
+    )
+    data_dir = parent_dir + '/data'
+    figname = f'{data_dir}/Adaptivity1.png'
     plot_results(DataToPlot, title, xlabel, ylabel, savefig=savefig, figname=figname)
 
-    filename = './data/Experiment2data.pkl'
+    filename = f'{data_dir}/Experiment2data.pkl'
     with open(filename, 'wb') as handle: 
         pickle.dump(DataToPlot, handle)

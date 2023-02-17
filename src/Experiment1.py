@@ -1,6 +1,8 @@
 """
 Experiment 1 from Section VI: "Numerical Experiments"
+Comparison of power of the sequential tests 
 """
+import os
 import pickle 
 import argparse
 from functools import partial
@@ -153,15 +155,27 @@ def plot_results(Data, title, xlabel, ylabel, savefig=False, figname=None):
         plt.show()
 
 if __name__=='__main__':
+    parser = argparse.ArgumentParser() 
+    parser.add_argument('--d', default=10, type=int, help='data dimension')
+    parser.add_argument('--eps', default=0.5, type=float)
+    parser.add_argument('--N_batch', '-Nb', default=200, type=int)
+    parser.add_argument('--num_perms', '-np', default=200, type=int)
+    parser.add_argument('--num_trials', '-nt', default=500, type=int)
+    parser.add_argument('--save_fig', '-sf', action='store_true')
+    parser.add_argument('--save_data', '-sd', action='store_true')
+    parser.add_argument('--alpha', '-a', default=0.05, type=float)
 
-    d=10
-    epsilon_mean = 0.5
-    N_batch = 200
+    args = parser.parse_args()
+
+    d= args.d #10
+    epsilon_mean = args.eps #0.5
+    N_batch = args.N_batch #200
     N_betting = 3*N_batch 
 
-    num_perms = 200
-    num_trials = 500
-    alpha=0.05
+    num_perms = args.num_perms #200
+    num_trials = args.num_trials #500
+    alpha= args.alpha #0.05
+
     num_steps_batch=  20
     ### parameters of the Gaussian distribution 
     epsilon_var = 0 
@@ -169,8 +183,8 @@ if __name__=='__main__':
     num_pert_var = 0
 
     # Flags to save the data 
-    savefig=True
-    savedata=savefig
+    savefig=args.save_fig
+    savedata=args.save_data
 
     # run the experiment
     DataToPlot = main(N_batch=N_batch, N_betting=N_betting, d=d,
@@ -182,9 +196,14 @@ if __name__=='__main__':
     title='Power vs Sample Size'
     xlabel='Sample-Size (n)'
     ylabel='Power'
-    figname = './data/Experiment1.png'
+    # get the path of the file to store data 
+    parent_dir = os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))
+    )
+    data_dir = parent_dir + '/data'
+    figname = f'{data_dir}/Experiment1.png'
     plot_results(DataToPlot, title, xlabel, ylabel, savefig=savefig, figname=figname)
 
-    filename = './data/Experiment1data.pkl'
+    filename = f'{data_dir}/Experiment1data.pkl'
     with open(filename, 'wb') as handle: 
         pickle.dump(DataToPlot, handle)

@@ -2,7 +2,7 @@
 Experiment 3 from Section VI: "Numerical Experiments"
 Adaptivity of the sequential test with unbounded kernels to the problem hardness 
 """
-
+import os
 import pickle 
 import argparse
 from functools import partial
@@ -94,21 +94,32 @@ def plot_results(Data, title, xlabel, ylabel, savefig=False, figname=None):
 
 
 if __name__=='__main__':
-    d=10
+    parser = argparse.ArgumentParser() 
+    parser.add_argument('--d', default=10, type=int, help='data dimension')
+    parser.add_argument('--eps', default=0.5, type=float)
+    parser.add_argument('--num_perms', '-np', default=200, type=int)
+    parser.add_argument('--num_trials', '-nt', default=500, type=int)
+    parser.add_argument('--save_fig', '-sf', action='store_true')
+    parser.add_argument('--save_data', '-sd', action='store_true')
+    parser.add_argument('--alpha', '-a', default=0.05, type=float)
+    args = parser.parse_args()
+
+
+    d=args.d
     Epsilon_mean = np.flip(np.array([0.55, 0.60, 0.8, 1.0, 1.2, 2.0]))
     NN_batch = np.flip(np.array([900, 800, 600, 400, 300, 200]))
     NN_betting = 2*NN_batch 
-    num_perms = 200
-    num_trials=500
-    alpha=0.05
+    num_perms = args.num_perms
+    num_trials=args.num_trials
+    alpha=args.alpha
     num_steps_batch= 20
     ### parameters of the Gaussian distribution 
     num_pert_mean=1 # number of perturbations in the mean vector 
-    epsilon_mean = 0.50 # magnitude of the perturbation
+    epsilon_mean = args.eps # magnitude of the perturbation
 
     #====================
-    savefig=True
-    savedata=savefig
+    savefig=args.save_fig
+    savedata=args.save_data
     #====================
     DataToPlot = {}
     t0 = time()
@@ -137,16 +148,21 @@ if __name__=='__main__':
 
         print(f'Completed iteration {i+1}/{len(Epsilon_mean)}. Total Time elapsed: {time()-t0:.2f} seconds')
 
-    # Create the figure
+    # get the path of the file to store data 
+    parent_dir = os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))
+    )
+    data_dir = parent_dir + '/data'
     temp = 'AdaptivityUnbounded'
-    figname = './data/'+temp+'.png'
+    figname = f'{data_dir}/{temp}.png'
+    # Create the figure
     title = 'Adaptivity to the unknown alternative'
     xlabel='Sample-Size'
     ylabel='Power'
     plot_results(DataToPlot, title=title, xlabel=xlabel, ylabel=ylabel, savefig=savefig,
                 figname=figname)
 
-    filename = './data/' + temp+ '.pkl'
+    filename = f'{data_dir}/{temp}.pkl'
     if savedata:
         with open(filename, 'wb') as handle: 
             pickle.dump(DataToPlot, handle)
